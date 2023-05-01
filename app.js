@@ -95,7 +95,7 @@ app.post('/auth/login', async (req, res) => {
     ]);
     const user = result.rows[0];
     if (user && (await bcrypt.compare(password, user.password))) {
-      const token = jwt.sign({ userId: user.id }, '{F91CB522-82A0-4F35-848F-9762E941196F}', { expiresIn: '1h' });
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
       req.session.userId = user.id; // Set the user ID in the session cookie 
       // console.log('req.session.userId:', req.session.userId);
       res.json({ token });
@@ -137,7 +137,7 @@ app.post('/auth/login', async (req, res) => {
 app.get('/notes', async (req, res) => {
    console.log('notes');
   try {
-    const decoded = jwt.verify(req.headers.authorization.split(' ')[1], '{F91CB522-82A0-4F35-848F-9762E941196F}'); 
+    const decoded = jwt.verify(req.headers.authorization.split(' ')[1], process.env.JWT_SECRET); 
     //decision to switch authentication method
     const userId = decoded.id
     const result = await pool.query(
@@ -211,7 +211,7 @@ app.put('/notes/:id', async (req, res) => {
   const { title, content } = req.body;
 
   try {
-    const decoded = jwt.verify(req.headers.authorization.split(' ')[1], '{F91CB522-82A0-4F35-848F-9762E941196F}'); 
+    const decoded = jwt.verify(req.headers.authorization.split(' ')[1], process.env.JWT_SECRET); 
     const userId = decoded.id;
 
     // validate id parameter and req.query data
@@ -312,8 +312,7 @@ app.put('/notes/:id', async (req, res) => {
 //     }
 //   });
 
-  //Where is the delete query here? -- DOUBLE CHECK THIS
-  //deleting a note **********
+  //Query to delete note by id
   app.delete('/notes/:id', async (req, res) => {
     console.log('delete notes route');
     console.log('req.params.id', req.params.id);
@@ -327,6 +326,7 @@ app.put('/notes/:id', async (req, res) => {
     }
 
     const userId = req.session.userId;
+    console.log('userId', userId)
     try {
       // Check if the note exists and belongs to the user
       const result = await pool.query(

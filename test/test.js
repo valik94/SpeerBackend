@@ -1,41 +1,3 @@
-// const app = require('../app');
-// const chai = require('chai');
-// const chaiHttp = require('chai-http');
-// const expect = chai.expect;
-
-// chai.use(chaiHttp);
-
-// describe('Notes API', () => {
-//   let server;
-
-//   before(done => {
-//     server = app.listen(3001, () => {
-//       console.log('Server listening on port 3001');
-//       done();
-//     });
-//   });
-  
-//   after(done => {
-//     server.close(done);
-//   });
-
-//   describe('POST /notes', () => {
-//     it('should create a new note', (done) => {
-//       const note = {
-//         title: 'Test note',
-//         content: 'This is a test note'
-//       };
-//       chai.request(server)
-//         .post('/notes')
-//         .send(note)
-//         .end((err, res) => {
-//           expect(res).to.have.status(200);
-//           expect(res.body).to.have.property('message').equal('Note created successfully');
-//           done();
-//         });
-//     });
-//   });
-// });
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -152,7 +114,8 @@ describe('PUT /notes/:id', () => {
       title: 'Updated Test Note',
       content: 'This is an updated test note.'
     };
-    const authToken = 'insert_auth_token_here'; // Replace with a valid auth token for your test user
+    // const authToken = 'insert_auth_token_here'; // Replace with a valid auth token for your test user
+    // const authToken = res.body.token;
 
     const res = await chai.request(app)
       .put(`/notes/${id}`)
@@ -199,67 +162,46 @@ describe('PUT /notes/:id', () => {
 // });
 
 
-// describe('PUT /notes/:id', () => {
-//   it('should update an existing note by ID for authenticated user', (done) => {
-//     const id = '8'; // Replace with a valid note ID for your test data
-//     const updatedNote = {
-//       title: 'Updated Test Note',
-//       content: 'This is an updated test note.'
-//     };
-//     chai.request(app)
-//       .put(`/notes/${id}`)
-//       .set('Authorization', `Bearer ${authToken}`)
-//       .send(updatedNote)
-//       .end((err, res) => {
-//         res.should.have.status(200);
-//         res.body.should.be.an('object');
-//         res.body.should.have.property('id').eql(id);
-//         res.body.should.have.property('title').eql(updatedNote.title);
-//         res.body.should.have.property('content').eql(updatedNote.content);
-//         done();
-//       });
-//   });
-// });
 
-// describe('DELETE /notes/:id', () => {
-//   it('should delete a note by ID for authenticated user', (done) => {
-//     const authToken = 'insert auth token here';
-//     const noteId = 'insert note ID here';
-//     chai.request(app)
-//       .delete(`/notes/${noteId}`)
-//       .set('Authorization', `Bearer ${authToken}`)
-//       .end((err, res) => {
-//         res.should.have.status(200);
-//         res.body.should.be.an('object');
-//         res.body.should.have.property('message').eql('Note deleted successfully');
-//         done();
-//       });
-//   });
+describe('DELETE /notes/:id', () => {
+  it('should delete a note by ID for authenticated user', (done) => {
+    // const authToken = res.body.token;
+    const noteId = '8';
+    chai.request(app)
+      .delete(`/notes/${noteId}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.an('object');
+        res.body.should.have.property('message').eql('Note deleted successfully');
+        done();
+      });
+  });
 
-//   it('should return a 401 error if not authenticated', (done) => {
-//     const noteId = 'insert note ID here';
-//     chai.request(app)
-//       .delete(`/notes/${noteId}`)
-//       .end((err, res) => {
-//         res.should.have.status(401);
-//         res.body.should.be.an('object');
-//         res.body.should.have.property('message').eql('Unauthorized');
-//         done();
-//       });
-//   });
+  it('should return a 401 error if not authenticated', (done) => {
+    const noteId = '3';
+    chai.request(app)
+      .delete(`/notes/${noteId}`)
+      .end((err, res) => {
+        res.should.have.status(401);
+        res.body.should.be.an('object');
+        res.body.should.have.property('message').eql('Unauthorized');
+        done();
+      });
+  });
 
-//   it('should return a 404 error if note not found', (done) => {
-//     const authToken = 'insert auth token here';
-//     const noteId = 'insert non-existent note ID here';
-//     chai.request(app)
-//       .delete(`/notes/${noteId}`)
-//       .set('Authorization', `Bearer ${authToken}`)
-//       .end((err, res) => {
-//         res.should.have.status(404);
-//         res.body.should.be.an('object');
-//         res.body.should.have.property('message').eql('Note not found');
-//         done();
-//       });
-//   });
-// });
+  it('should return a 404 error if note not found', (done) => {
+    // const authToken = res.body.token;
+    const noteId = 'insert non-existent note ID here';
+    chai.request(app)
+      .delete(`/notes/${noteId}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.be.an('object');
+        res.body.should.have.property('message').eql('Note not found');
+        done();
+      });
+  });
+});
 });
